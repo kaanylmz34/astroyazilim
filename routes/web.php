@@ -12,7 +12,16 @@ Route::get('/', function () {
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
-});
+})->name('home');
+
+Route::get('/contact', function () {
+    return Inertia::render('Contact');
+})->name('contact');
+
+# about
+Route::get('/about', function () {
+    return Inertia::render('About');
+})->name('about');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
