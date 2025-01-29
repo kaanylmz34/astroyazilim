@@ -18,6 +18,31 @@ Route::get('/contact', function () {
     return Inertia::render('Contact');
 })->name('contact');
 
+# customer / dashboard
+Route::get('/customer/dashboard', function () {
+    return Inertia::render('Customer/Dashboard');
+})->name('customer.dashboard');
+
+# admin / users
+Route::get('/admin/users', function () {
+    return Inertia::render('Customer/Users');
+})->name('admin.users');
+
+# customer / track
+Route::get('/customer/track', function () {
+    return Inertia::render('Customer/Track');
+})->name('track');
+
+# get-offer
+Route::get('/get-offer', function () {
+    return Inertia::render('GetOffer');
+})->name('get-offer');
+
+# projects
+Route::get('/projects', function () {
+    return Inertia::render('Projects');
+})->name('projects');
+
 # about
 Route::get('/about', function () {
     return Inertia::render('About');
