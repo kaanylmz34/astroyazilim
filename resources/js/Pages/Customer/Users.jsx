@@ -3,6 +3,7 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { Link, usePage } from '@inertiajs/react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Table from '@/Components/Table';
 
 export default () => {
 
@@ -314,100 +315,17 @@ export default () => {
                             </div>
 
                             <div className="bg-black/20 backdrop-blur-sm rounded-lg border border-indigo-500/20 overflow-hidden">
-                                {/* Table Header with Search */}
-                                <div className="p-4 border-b border-indigo-500/20">
-                                    <div className="flex justify-between items-center mb-4">
-                                        <h2 className="text-xl text-white font-semibold">Users</h2>
-                                        <div className="flex items-center space-x-3">
-                                            <input
-                                                type="text"
-                                                placeholder="Global Search..."
-                                                className="bg-black/30 border border-indigo-500/20 rounded-lg px-4 py-2 text-white/80 placeholder-white/40 focus:outline-none focus:border-indigo-500"
-                                            />
-                                            <button className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg transition-colors">
-                                                Add User
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
-                                    {/* Column Headers with Filters */}
-                                    <div className="grid grid-cols-7 gap-4">
-                                        {['Name', 'Surname', 'Email', 'Phone', 'Company', 'Projects', 'Status'].map((header) => (
-                                            <div key={header} className="space-y-2">
-                                                <input
-                                                    type="text"
-                                                    placeholder={`Filter ${header}...`}
-                                                    className="w-full bg-black/30 border border-indigo-500/20 rounded px-3 py-1 text-sm text-white/80 placeholder-white/40 focus:outline-none focus:border-indigo-500"
-                                                />
-                                                <div className="flex items-center justify-between text-white/60 text-sm">
-                                                    <span>{header}</span>
-                                                    <svg className="w-4 h-4 cursor-pointer hover:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16V4m0 0L3 8m4-4l4 4m-4 4v8m0 0l4-4m-4 4l-4-4" />
-                                                    </svg>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Table Body */}
-                                <div className="overflow-x-auto">
-                                    <table className="w-full">
-                                        <tbody>
-                                            {[
-                                                { status: 'pending', highlight: 'bg-white/5' },
-                                                { status: 'active', highlight: '' },
-                                                { status: 'suspended', highlight: 'bg-red-500/10' },
-                                            ].map((row, idx) => (
-                                                <tr key={idx} className={`${row.highlight} hover:bg-indigo-500/10 transition-colors`}>
-                                                    <td className="px-6 py-4 text-white/80">John</td>
-                                                    <td className="px-6 py-4 text-white/80">Doe</td>
-                                                    <td className="px-6 py-4 text-white/80">john@example.com</td>
-                                                    <td className="px-6 py-4 text-white/80">+1234567890</td>
-                                                    <td className="px-6 py-4 text-white/80">Tech Corp</td>
-                                                    <td className="px-6 py-4">
-                                                        <span className="bg-indigo-500/20 text-indigo-400 px-2 py-1 rounded-full text-sm">
-                                                            12
-                                                        </span>
-                                                    </td>
-                                                    <td className="px-6 py-4 flex justify-between items-center">
-                                                        <span className={`px-3 py-1 rounded-full text-sm ${
-                                                            row.status === 'active' ? 'bg-green-500/20 text-green-400' :
-                                                            row.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' :
-                                                            'bg-red-500/20 text-red-400'
-                                                        }`}>
-                                                            {row.status}
-                                                        </span>
-                                                        <div className="relative group">
-                                                            <svg className="w-6 h-6 text-white/60 hover:text-indigo-400 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-                                                            </svg>
-                                                            <div className="absolute right-0 mt-2 w-48 invisible group-hover:visible bg-black/90 backdrop-blur-lg border border-indigo-500/20 rounded-lg shadow-lg z-50">
-                                                                <div className="py-1">
-                                                                    <a href="#" className="block px-4 py-2 text-sm text-white/80 hover:bg-indigo-500/20">View Details</a>
-                                                                    <a href="#" className="block px-4 py-2 text-sm text-white/80 hover:bg-indigo-500/20">Edit User</a>
-                                                                    <a href="#" className="block px-4 py-2 text-sm text-red-400 hover:bg-red-500/20">Delete User</a>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                                {/* Pagination */}
-                                <div className="p-4 border-t border-indigo-500/20 flex items-center justify-between">
-                                    <span className="text-white/60 text-sm">Showing 1 to 10 of 100 entries</span>
-                                    <div className="flex space-x-2">
-                                        <button className="px-3 py-1 rounded-lg bg-indigo-500/20 text-white/80 hover:bg-indigo-500/30">Previous</button>
-                                        <button className="px-3 py-1 rounded-lg bg-indigo-500 text-white">1</button>
-                                        <button className="px-3 py-1 rounded-lg bg-indigo-500/20 text-white/80 hover:bg-indigo-500/30">2</button>
-                                        <button className="px-3 py-1 rounded-lg bg-indigo-500/20 text-white/80 hover:bg-indigo-500/30">3</button>
-                                        <button className="px-3 py-1 rounded-lg bg-indigo-500/20 text-white/80 hover:bg-indigo-500/30">Next</button>
-                                    </div>
-                                </div>
+                                <Table
+                                    title="Users"
+                                    columns={[
+                                        { key: 'name', label: 'Name', sortable: true },
+                                        { key: 'email', label: 'Email', sortable: true },
+                                        { key: 'role', label: 'Role', sortable: true },
+                                        { key: 'created_at', label: 'Created At', sortable: true },
+                                    ]}
+                                    dataUrl="/get-users"
+                                    pagination={true}
+                                />
                             </div>
 
                         </div>
