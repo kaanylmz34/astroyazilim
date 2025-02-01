@@ -4,234 +4,77 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\OrderController;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-})->name('home');
+# models
+use App\Models\Order;
 
-Route::get('/contact', function () {
-    return Inertia::render('Contact');
-})->name('contact');
+    require __DIR__ . '/auth.php';
 
-# customer / dashboard
-Route::get('/customer/dashboard', function () {
-    return Inertia::render('Customer/Dashboard');
-})->name('customer.dashboard');
+    Route::get('/', function () {
+        return Inertia::render('Welcome', [
+            'canLogin' => Route::has('login'),
+            'canRegister' => Route::has('register'),
+            'laravelVersion' => Application::VERSION,
+            'phpVersion' => PHP_VERSION,
+        ]);
+    })->name('home');
 
-# admin / users
-Route::get('/admin/users', function () {
-    return Inertia::render('Customer/Users');
-})->name('admin.users');
+    Route::get('/contact', function () {
+        return Inertia::render('Contact');
+    })->name('contact');
 
-# customer / track
-Route::get('/customer/track', function () {
-    return Inertia::render('Customer/Track');
-})->name('track');
+    # customer routes
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/customer/dashboard', function () {
+            return Inertia::render('Customer/Dashboard');
+        })->name('customer.dashboard');
 
-# get-offer
-Route::get('/get-offer', function () {
-    return Inertia::render('GetOffer');
-})->name('get-offer');
+        Route::get('/customer/orders', function () {
+            $orders = Order::where('user_id', auth()->user()->id)->get();
+            return Inertia::render('Customer/Orders', compact('orders'));
+        })->name('customer.orders');
 
-# projects
-Route::get('/projects', function () {
-    return Inertia::render('Projects');
-})->name('projects');
+        Route::get('/customer/track', function () {
+            return Inertia::render('Customer/Track');
+        })->name('customer.track');
+    });
 
-# about
-Route::get('/about', function () {
-    return Inertia::render('About');
-})->name('about');
+    # admin routes
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/admin/users', function () {
+            return Inertia::render('Customer/Users');
+        })->name('admin.users');
+    });
 
-# TODO: TESTTEN SONRA BU KISMI KALDIR
-Route::get('/get-users', function () {
+    # get-offer
+    Route::get('/get-offer', function () {
+        return Inertia::render('GetOffer');
+    })->name('get-offer');
 
-    $data = [['name' => 'John Doe', 'email' => 'test@example.com', 'role' => 'admin', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'John Doe', 'email' => 'test@example.com', 'role' => 'admin', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'John Doe', 'email' => 'test@example.com', 'role' => 'admin', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'John Doe', 'email' => 'test@example.com', 'role' => 'admin', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe123', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'John Doe', 'email' => 'test@example.com', 'role' => 'admin', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'John Doe', 'email' => 'test@example.com', 'role' => 'admin', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'John Doe', 'email' => 'test@example.com', 'role' => 'admin', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'John Doe', 'email' => 'test@example.com', 'role' => 'admin', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe123', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'John Doe', 'email' => 'test@example.com', 'role' => 'admin', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'John Doe', 'email' => 'test@example.com', 'role' => 'admin', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'John Doe', 'email' => 'test@example.com', 'role' => 'admin', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'John Doe', 'email' => 'test@example.com', 'role' => 'admin', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe123', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'John Doe', 'email' => 'test@example.com', 'role' => 'admin', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'John Doe', 'email' => 'test@example.com', 'role' => 'admin', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'John Doe', 'email' => 'test@example.com', 'role' => 'admin', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'John Doe', 'email' => 'test@example.com', 'role' => 'admin', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-    ['name' => 'Jane Doe123', 'email' => 'test@example.com', 'role' => 'customer', 'created_at' => '2021-01-01'],
-];
+    # projects
+    Route::get('/projects', function () {
+        return Inertia::render('Projects');
+    })->name('projects');
 
-    return response()->json([
-        'data' => collect($data)->forPage(request()->get('page', 1), 10)->values(),
-        'current_page' => request()->get('page', 1),
-        'last_page' => ceil(count($data) / 10),
-        'from' => (request()->get('page', 1) - 1) * 10 + 1,
-        'to' => (request()->get('page', 1) - 1) * 10 + 10,
-        'total' => count($data),
-    ]);
+    # about
+    Route::get('/about', function () {
+        return Inertia::render('About');
+    })->name('about');
 
-})->name('test');
+    Route::resource('products', ProductController::class);
+    Route::resource('invoices', InvoiceController::class);
+    Route::resource('payments', PaymentController::class);
+    Route::resource('orders', OrderController::class);
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
-
-require __DIR__.'/auth.php';
+    Route::middleware(['auth'])->group(function () {
+        Route::prefix('api')->group(function () {
+            Route::get('/orders', [OrderController::class, 'index'])->name('api.orders');
+        });
+    });

@@ -4,6 +4,7 @@ import 'aos/dist/aos.css';
 import { Link, usePage } from '@inertiajs/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
+import { debounce } from 'lodash';
 
 export default ({ title, columns, data, dataUrl, onSearch, onAdd, onFilter, onSort, onPageChange, pagination }) => {
     const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -15,6 +16,20 @@ export default ({ title, columns, data, dataUrl, onSearch, onAdd, onFilter, onSo
     const [xhrPagination, setXhrPagination] = useState(pagination);
 
     const [goPageInput, setGoPageInput] = useState('');
+
+    const debouncedSearch = debounce((value) => {
+        if (onSearch) {
+            onSearch(value);
+        } else {
+            handleSearch(value); // Eğer onSearch prop'u yoksa, yerel arama fonksiyonunu kullan
+        }
+    }, 500);
+
+    const handleSearchChange = (e) => {
+        const value = e.target.value;
+        setSearchQuery(value); // Arama sorgusunu state'de saklayalım
+        debouncedSearch(value);
+    };
 
     useEffect(() => {
         AOS.init({
@@ -28,7 +43,7 @@ export default ({ title, columns, data, dataUrl, onSearch, onAdd, onFilter, onSo
         if (dataUrl) {
             axios.get(dataUrl)
                 .then(response => {
-                    setData(response.data);
+                    setLocalData(response.data.data);
                 });
         }
     }, [dataUrl]);
@@ -124,7 +139,7 @@ export default ({ title, columns, data, dataUrl, onSearch, onAdd, onFilter, onSo
     };
 
     return (
-        <div className="bg-transparent backdrop-blur-sm rounded-lg border border-indigo-500/20 overflow-hidden">
+        <div className="bg-black/20 backdrop-blur-sm rounded-lg border border-indigo-500/20 overflow-hidden">
             {/* Table Header with Search */}
             <div className="p-4 border-b border-indigo-500/20">
                 <div className="flex justify-between items-center mb-4">
@@ -132,9 +147,9 @@ export default ({ title, columns, data, dataUrl, onSearch, onAdd, onFilter, onSo
                     <div className="flex items-center space-x-3">
                         <input
                             type="text"
-                            placeholder="Global Search..."
+                            placeholder="Arama"
                             className="bg-black/30 border border-indigo-500/20 rounded-lg px-4 py-2 text-white/80 placeholder-white/40 focus:outline-none focus:border-indigo-500"
-                            onChange={(e) => handleSearch(e.target.value)}
+                            onChange={handleSearchChange}
                         />
                         {onAdd && (
                             <button 
@@ -151,12 +166,6 @@ export default ({ title, columns, data, dataUrl, onSearch, onAdd, onFilter, onSo
                 <div className="grid gap-8" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(0, 1fr))` }}>
                     {columns.map((column) => (
                         <div key={column.key} className="space-y-4">
-                            <input
-                                type="text"
-                                placeholder={`Filter ${column.label}...`}
-                                className="w-full bg-black/30 border border-indigo-500/20 rounded px-3 py-1 text-sm text-white/80 placeholder-white/40 focus:outline-none focus:border-indigo-500"
-                                onChange={(e) => handleFilter(column.key, e.target.value)}
-                            />
                             <div className="flex items-center justify-between text-white/60 text-sm">
                                 <span>{column.label}</span>
                                 {column.sortable && (
