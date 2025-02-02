@@ -41,6 +41,7 @@ const Payments = () => {
                         }
                     }
                 }}
+                pagination={true}
             />
         </CustomerLayout>
     );

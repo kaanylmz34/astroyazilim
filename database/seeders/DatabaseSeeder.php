@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\ProductImage;
+use App\Models\Project;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -20,6 +21,13 @@ class DatabaseSeeder extends Seeder
     {
         // 10 kullanıcı oluştur
         $users = User::factory(10)->create();
+
+        // Her kullanıcı için 3 proje oluştur
+        $users->each(function ($user) {
+            Project::factory(3)->create([
+                'user_id' => $user->id
+            ]);
+        });
 
         // 20 ürün oluştur
         $products = Product::factory(20)->create()->each(function ($product) {
@@ -50,5 +58,10 @@ class DatabaseSeeder extends Seeder
                 ]);
             });
         });
+
+        // Müşteriler ve projeler oluştur
+        User::factory(10)
+            ->has(Project::factory()->count(3))
+            ->create();
     }
 }

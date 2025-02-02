@@ -43,7 +43,7 @@ export default function Login({ status, canResetPassword }) {
                                         name="email"
                                         value={data.email}
                                         onChange={e => setData('email', e.target.value)}
-                                        placeholder="Telefon no veya E-posta"
+                                        placeholder="E-posta adresiniz"
                                         className="w-full rounded-xl border border-gray-700/50 bg-gray-800/40 p-4 text-white placeholder-gray-500 transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                                     />
                                     {errors.email && <div className="mt-1 text-sm text-red-400">{errors.email}</div>}

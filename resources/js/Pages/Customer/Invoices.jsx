@@ -22,6 +22,7 @@ const Invoices = () => {
                     address: (value, row) => `${row.address.length > 20 ? row.address.substring(0, 20) + '...' : row.address}`,
                     file: (value, row) => <a href={row.file} target="_blank" className="bg-blue-500/20 text-blue-300 px-2 py-1 rounded-md text-sm cursor-pointer hover:bg-blue-500/30 transition-colors duration-300">Fatura İndir</a>
                 }}
+                pagination={true}
             />
         </CustomerLayout>
     );

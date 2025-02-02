@@ -7,12 +7,6 @@ import axios from 'axios';
 import { debounce } from 'lodash';
 
 export default ({ title, columns, data, dataUrl, onSearch, onAdd, onFilter, onSort, onPageChange, pagination, columnFormatters = {} }) => {
-    const [isSearchFocused, setIsSearchFocused] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
-    
-    const buttonRef = useRef();
-    const dropdownRef = useRef();
     const [xhrPagination, setXhrPagination] = useState(pagination);
 
     const [goPageInput, setGoPageInput] = useState('');
@@ -163,8 +157,8 @@ export default ({ title, columns, data, dataUrl, onSearch, onAdd, onFilter, onSo
                 </div>
                 
                 {/* Column Headers with Filters */}
-                <div className="grid gap-8" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(0, 1fr))` }}>
-                    {columns.map((column) => (
+                <div className="grid gap-8" style={{ gridTemplateColumns: `repeat(${columns.filter(col => !col.hidden).length}, minmax(0, 1fr))` }}>
+                    {columns.filter(col => !col.hidden).map((column) => (
                         <div key={column.key} className="space-y-4">
                             <div className="flex items-center justify-between text-white/60 text-sm">
                                 <span>{column.label}</span>
@@ -189,14 +183,15 @@ export default ({ title, columns, data, dataUrl, onSearch, onAdd, onFilter, onSo
             <div className="overflow-x-auto">
                 <table className="w-full table-fixed">
                     <colgroup>
-                        {columns.map((_, index) => (
-                            <col key={index} style={{ width: `${100 / columns.length}%` }} />
+                        {columns.filter(col => !col.hidden).map((_, index) => (
+                            <col key={index} style={{ width: `${100 / columns.filter(col => !col.hidden).length}%` }} />
                         ))}
                     </colgroup>
                     <tbody>
-                        {localData.map((row, idx) => (
+                        {
+                            localData.length > 0 && localData.map((row, idx) => (
                                 <tr key={idx} className={`${row.highlight || ''} hover:bg-indigo-500/10 transition-colors`}>
-                                    {columns.map((column) => (
+                                    {columns.filter(col => !col.hidden).map((column) => (
                                         <td key={column.key} className="p-4 text-white/80">
                                             {columnFormatters[column.key] 
                                                 ? columnFormatters[column.key](row[column.key], row)
@@ -205,6 +200,13 @@ export default ({ title, columns, data, dataUrl, onSearch, onAdd, onFilter, onSo
                                     ))}
                                 </tr>
                             ))
+                        }
+                        {
+                            localData.length == 0 && (
+                                <tr>
+                                    <td colSpan={columns.filter(col => !col.hidden).length} className="p-4 text-white/80 text-center">Veri yok.</td>
+                                </tr>
+                            )
                         }
                     </tbody>
                 </table>
@@ -232,7 +234,7 @@ export default ({ title, columns, data, dataUrl, onSearch, onAdd, onFilter, onSo
                             disabled={dataUrl ? xhrPagination.currentPage == 1 : pagination.currentPage == 1}
                             className="px-3 py-1 rounded-lg bg-indigo-500/20 text-white/80 hover:bg-indigo-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            First
+                            İlk
                         </button>
 
                         <button
@@ -240,7 +242,7 @@ export default ({ title, columns, data, dataUrl, onSearch, onAdd, onFilter, onSo
                             disabled={dataUrl ? xhrPagination.currentPage == 1 : pagination.currentPage == 1}
                             className="px-3 py-1 rounded-lg bg-indigo-500/20 text-white/80 hover:bg-indigo-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            Previous
+                            Önceki
                         </button>
                         
                         {(() => {
@@ -294,7 +296,7 @@ export default ({ title, columns, data, dataUrl, onSearch, onAdd, onFilter, onSo
                             disabled={dataUrl ? xhrPagination.currentPage == xhrPagination.totalPages : pagination.currentPage == pagination.totalPages}
                             className="px-3 py-1 rounded-lg bg-indigo-500/20 text-white/80 hover:bg-indigo-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            Next
+                            Sonraki
                         </button>
 
                         <button
@@ -302,22 +304,24 @@ export default ({ title, columns, data, dataUrl, onSearch, onAdd, onFilter, onSo
                             disabled={dataUrl ? xhrPagination.currentPage == xhrPagination.totalPages : pagination.currentPage == pagination.totalPages}
                             className="px-3 py-1 rounded-lg bg-indigo-500/20 text-white/80 hover:bg-indigo-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            Last
+                            Son
                         </button>
                     </nav>
                     {/* go specific page input and button */}
                     <div className="flex items-center space-x-2">
                         <input
                             type="number"
+                            min={1}
+                            max={dataUrl ? xhrPagination.totalPages : pagination.totalPages}
                             value={goPageInput}
                             onChange={(e) => setGoPageInput(e.target.value)}
-                            className="w-16 px-2 py-1 rounded-lg bg-black/30 text-white/80 focus:outline-none focus:border-indigo-500/20"
+                            className="bg-black/30 border border-indigo-500/20 rounded-lg px-4 py-2 text-white/80 placeholder-white/40 focus:outline-none focus:border-indigo-500 w-16"
                         />
                         <button
                             onClick={() => handlePageChange(goPageInput)}
                             className="px-3 py-1 rounded-lg bg-indigo-500/20 text-white/80 hover:bg-indigo-500/30"
                         >
-                            Go
+                            Git
                         </button>
                     </div>
                 </div>
