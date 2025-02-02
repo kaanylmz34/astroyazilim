@@ -19,7 +19,8 @@ class Invoice extends Model
         'identification_number', // TC no/vergi no
         'company_name',
         'address',
-        'invoice_date'
+        'invoice_date',
+        'file'
     ];
 
     protected $casts = [

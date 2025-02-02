@@ -7,10 +7,52 @@ use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $invoices = Invoice::with('user')->get();
-        return response()->json($invoices);
+        $search = $request->input('search');
+        
+        $invoices = Invoice::query()
+            ->where('user_id', auth()->id())
+            ->when($search, function($query) use ($search) {
+                $query->where(function($q) use ($search) {
+                    $q->where('first_name', 'like', "%{$search}%")
+                      ->orWhere('last_name', 'like', "%{$search}%")
+                      ->orWhere('identification_number', 'like', "%{$search}%")
+                      ->orWhere('company_name', 'like', "%{$search}%")
+                      ->orWhere('invoice_date', 'like', "%{$search}%");
+                });
+            })
+            ->latest()
+            ->paginate(10);
+
+        return response()->json([
+            'data' => $invoices->map(function ($invoice) {
+                return [
+                    'first_name' => $invoice->first_name,
+                    'last_name' => $invoice->last_name,
+                    'identification_number' => $invoice->identification_number,
+                    'company_name' => $invoice->company_name,
+                    'address' => $invoice->address,
+                    'invoice_date' => $invoice->invoice_date?->format('d.m.Y H:i'),
+                    'file' => $invoice->file ? route('invoices.download', $invoice->id) : null
+                ];
+            }),
+            'meta' => [
+                'current_page' => $invoices->currentPage(),
+                'last_page' => $invoices->lastPage(),
+                'per_page' => $invoices->perPage(),
+                'total' => $invoices->total(),
+            ]
+        ]);
+    }
+
+    public function download(Request $request, Invoice $invoice)
+    {
+        if ($request->user()->id !== $invoice->user_id) {
+            abort(403, 'Unauthorized');
+        }
+        
+        return response()->download($invoice->file);
     }
 
     public function store(Request $request)

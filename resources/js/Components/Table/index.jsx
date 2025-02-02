@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { debounce } from 'lodash';
 
-export default ({ title, columns, data, dataUrl, onSearch, onAdd, onFilter, onSort, onPageChange, pagination }) => {
+export default ({ title, columns, data, dataUrl, onSearch, onAdd, onFilter, onSort, onPageChange, pagination, columnFormatters = {} }) => {
     const [isSearchFocused, setIsSearchFocused] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
@@ -198,7 +198,9 @@ export default ({ title, columns, data, dataUrl, onSearch, onAdd, onFilter, onSo
                                 <tr key={idx} className={`${row.highlight || ''} hover:bg-indigo-500/10 transition-colors`}>
                                     {columns.map((column) => (
                                         <td key={column.key} className="p-4 text-white/80">
-                                            {column.render ? column.render(row) : row[column.key]}
+                                            {columnFormatters[column.key] 
+                                                ? columnFormatters[column.key](row[column.key], row)
+                                                : row[column.key]}
                                         </td>
                                     ))}
                                 </tr>

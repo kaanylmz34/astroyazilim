@@ -44,6 +44,14 @@ use App\Models\Order;
         Route::get('/customer/track', function () {
             return Inertia::render('Customer/Track');
         })->name('customer.track');
+
+        Route::get('/customer/payments', function () {
+            return Inertia::render('Customer/Payments');
+        })->name('customer.payments');
+
+        Route::get('/customer/invoices', function () {
+            return Inertia::render('Customer/Invoices');
+        })->name('customer.invoices');
     });
 
     # admin routes
@@ -76,5 +84,9 @@ use App\Models\Order;
     Route::middleware(['auth'])->group(function () {
         Route::prefix('api')->group(function () {
             Route::get('/orders', [OrderController::class, 'index'])->name('api.orders');
+            Route::get('/payments', [PaymentController::class, 'index'])->name('api.payments');
+            Route::get('/invoices', [InvoiceController::class, 'index'])->name('api.invoices');
         });
     });
+
+    Route::get('/invoices/{invoice}/download', [InvoiceController::class, 'download'])->middleware('auth')->name('invoices.download');

@@ -51,20 +51,8 @@ class OrderController extends Controller
                     'payment_amount' => number_format($order->invoice?->payment?->amount, 2) . ' ₺',
                     'invoice_date' => $order->invoice?->invoice_date?->format('d.m.Y H:i'),
                     'payment_date' => $order->invoice?->payment?->payment_date?->format('d.m.Y H:i'),
-                    'payment_status' => match($order->invoice?->payment?->payment_status) {
-                        'pending' => 'Beklemede',
-                        'completed' => 'Tamamlandı',
-                        'failed' => 'Başarısız',
-                        'refunded' => 'İade Edildi',
-                        default => $order->invoice?->payment?->payment_status,
-                    },
-                    'order_status' => match($order->status) {
-                        'pending' => 'Beklemede',
-                        'processing' => 'İşleniyor', 
-                        'completed' => 'Tamamlandı',
-                        'cancelled' => 'İptal Edildi',
-                        default => $order->status,
-                    },
+                    'payment_status' => $order->invoice?->payment?->payment_status,
+                    'order_status' => $order->status,
                 ];
             }),
             'meta' => [

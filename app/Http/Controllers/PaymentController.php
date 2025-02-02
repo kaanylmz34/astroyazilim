@@ -7,10 +7,40 @@ use Illuminate\Http\Request;
 
 class PaymentController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $payments = Payment::with('user')->get();
-        return response()->json($payments);
+        $search = $request->input('search');
+        
+        $payments = Payment::query()
+            ->where('user_id', auth()->id())
+            ->when($search, function($query) use ($search) {
+                $query->where(function($q) use ($search) {
+                    $q->where('payment_method', 'like', "%{$search}%")
+                      ->orWhere('payment_status', 'like', "%{$search}%")
+                      ->orWhere('payment_date', 'like', "%{$search}%")
+                      ->orWhere('amount', 'like', "%{$search}%");
+                });
+            })
+            ->latest()
+            ->paginate(10);
+
+        return response()->json([
+            'data' => $payments->map(function ($payment) {
+                return [
+                    'amount' => number_format($payment->amount, 2) . ' ₺',
+                    'payment_date' => $payment->payment_date?->format('d.m.Y H:i'),
+                    'payment_method' => $payment->payment_method,
+                    'payment_status' => $payment->payment_status,
+                    'user_note' => $payment->user_note
+                ];
+            }),
+            'meta' => [
+                'current_page' => $payments->currentPage(),
+                'last_page' => $payments->lastPage(), 
+                'per_page' => $payments->perPage(),
+                'total' => $payments->total(),
+            ]
+        ]);
     }
 
     public function store(Request $request)
