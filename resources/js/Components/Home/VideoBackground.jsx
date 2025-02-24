@@ -1,9 +1,11 @@
 import React from 'react';
 import { motion } from "framer-motion";
 import { useSpring, animated, config } from '@react-spring/web'
-import { Link } from '@inertiajs/react';
+import { Link, usePage, router } from '@inertiajs/react';
 
 const VideoBackground = () => {
+
+    const auth = usePage().props.auth;
 
     const fadeIn = useSpring({
         from: { opacity: 0 },
@@ -22,6 +24,14 @@ const VideoBackground = () => {
         to: { transform: 'scale(1)', opacity: 1 },
         config: { tension: 200, friction: 20 }
     })
+
+    const handleLogout = () => {
+        router.post(route('logout'), null, {
+            onSuccess: () => {
+                router.visit(route('login'));
+            },
+        });
+    };
 
     return (
         <div className="relative w-full h-screen overflow-hidden">
@@ -43,7 +53,7 @@ const VideoBackground = () => {
                 <div className="group relative">
                     <div className="flex items-center space-x-3 cursor-pointer">
                         <span className="text-white/90 text-sm font-light hover:text-white transition-colors duration-300">
-                            Müşteri Girişi
+                            {auth.user ? 'Hesabım' : 'Müşteri Girişi'}
                         </span>
                         <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 
                                       flex items-center justify-center group-hover:bg-white/20 transition-all duration-300">
@@ -55,12 +65,29 @@ const VideoBackground = () => {
                     <div className="absolute right-0 top-full mt-2 w-48 invisible group-hover:visible opacity-0 group-hover:opacity-100 
                                   transition-all duration-300 transform scale-95 group-hover:scale-100">
                         <div className="bg-white/10 backdrop-blur-md rounded-lg shadow-xl border border-white/20 overflow-hidden">
-                            <Link href={route('login')} className="block px-4 py-3 text-sm text-white/90 hover:bg-white/20 transition-colors duration-300">
-                                Giriş Yap
-                            </Link>
-                            <Link href={route('register')} className="block px-4 py-3 text-sm text-white/90 hover:bg-white/20 transition-colors duration-300">
-                                Hesap Oluştur
-                            </Link>
+                            {!auth.user ? (
+                                <>
+                                    <Link href={route('login')} className="block px-4 py-3 text-sm text-white/90 hover:bg-white/20 transition-colors duration-300">
+                                        Giriş Yap
+                                    </Link>
+                                    <Link href={route('register')} className="block px-4 py-3 text-sm text-white/90 hover:bg-white/20 transition-colors duration-300">
+                                        Hesap Oluştur
+                                    </Link>
+                                </>
+                            ) : (
+                                <>
+                                    <Link href={route('home')} className="block px-4 py-3 text-sm text-white/90 hover:bg-white/20 transition-colors duration-300">
+                                        Hesabım
+                                    </Link>
+                                    <button 
+                                        onClick={handleLogout}
+                                        type="button" 
+                                        className="w-full text-left px-4 py-3 text-sm text-white/90 hover:text-red-500 hover:bg-red-500/20 transition-colors duration-300"
+                                    >
+                                        Çıkış Yap
+                                    </button>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -91,26 +118,13 @@ const VideoBackground = () => {
                         Geleceğin teknolojisini bugünden keşfedin
                     </motion.p>
                     
+                    {/*
                     <motion.div 
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ duration: 0.5, delay: 0.6 }}
                         className="space-x-6"
                     >
-                        <animated.button
-                            style={buttonAnimation}
-                            onClick={() => {
-                                buttonAnimation.start({
-                                    from: { transform: 'scale(0.9)' },
-                                    to: { transform: 'scale(1)' },
-                                    config: { tension: 300, friction: 10 }
-                                })
-                            }}
-                            className="bg-white/10 backdrop-blur-sm text-white px-8 py-3 rounded-full 
-                            hover:bg-white hover:text-black transition-all duration-500 font-light text-base border border-white/30"
-                        >
-                            Keşfet
-                        </animated.button>
                         <animated.button
                             style={buttonAnimation}
                             onClick={() => {
@@ -140,6 +154,12 @@ const VideoBackground = () => {
                             İletişim
                         </animated.button>
                     </motion.div>
+                    */}
+
+                    {/* Bakım aşamasındayız yazısı */}
+                    <div className="text-white text-sm font-light">
+                        Bakım aşamasındayız...
+                    </div>
                 </div>
             </motion.div>
         </div>
